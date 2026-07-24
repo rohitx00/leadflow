@@ -9,3 +9,14 @@ export const createPublicLeadSchema = z.object({
     phone: z.string().optional(),
   }),
 });
+
+export const updateLeadSchema = z.object({
+  body: z.object({
+    status: z.enum(['NEW', 'CONTACTED', 'QUALIFIED', 'PROPOSAL', 'WON', 'LOST']).optional(),
+    firstName: z.string().min(1).optional(),
+    lastName: z.string().min(1).optional(),
+    email: z.string().email().optional(),
+    company: z.string().optional(),
+    phone: z.string().optional(),
+  }),
+});
