@@ -48,3 +48,12 @@ export const deleteLead = async (req, res, next) => {
     next(error);
   }
 };
+
+export const addNote = async (req, res, next) => {
+  try {
+    const note = await leadService.addNote(req.params.id, req.user.id, req.body.content);
+    res.status(201).json({ success: true, data: note });
+  } catch (error) {
+    next(error);
+  }
+};

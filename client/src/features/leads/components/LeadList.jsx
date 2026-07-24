@@ -1,4 +1,5 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { getLeads, updateLeadStatus, deleteLead } from '../api/lead.api.js';
 import { getUsers } from '../../users/api/user.api.js';
@@ -81,7 +82,9 @@ export const LeadList = () => {
               leads.map((lead) => (
                 <tr key={lead.id} className="hover:bg-gray-50 transition-colors">
                   <td className="px-6 py-4 whitespace-nowrap">
-                    <div className="font-medium text-gray-900">{lead.firstName} {lead.lastName}</div>
+                    <Link to={`/dashboard/leads/${lead.id}`} className="font-medium text-blue-600 hover:text-blue-800 hover:underline">
+                      {lead.firstName} {lead.lastName}
+                    </Link>
                     <div className="text-sm text-gray-500">{lead.email}</div>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
