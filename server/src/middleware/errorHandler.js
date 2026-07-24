@@ -5,6 +5,7 @@ export const errorHandler = (err, req, res, next) => {
     success: false,
     error: {
       message: err.message || 'Internal Server Error',
+      details: err.errors || undefined,
       ...(process.env.NODE_ENV === 'development' && { stack: err.stack }),
     },
   });
