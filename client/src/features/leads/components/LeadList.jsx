@@ -1,6 +1,7 @@
 import React from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { getLeads, updateLeadStatus, deleteLead } from '../api/lead.api.js';
+import { getUsers } from '../../users/api/user.api.js';
 import { LeadStatusBadge } from './LeadStatusBadge.jsx';
 import { useAuth } from '../../auth/hooks/useAuth.jsx';
 
@@ -13,8 +14,14 @@ export const LeadList = () => {
     queryFn: getLeads
   });
 
-  const updateStatusMutation = useMutation({
-    mutationFn: ({ id, status }) => updateLeadStatus(id, status),
+  const { data: usersResponse } = useQuery({
+    queryKey: ['users'],
+    queryFn: getUsers,
+    enabled: user?.role === 'ADMIN',
+  });
+
+  const updateLeadMutation = useMutation({
+    mutationFn: ({ id, data }) => updateLeadStatus(id, data), // updateLeadStatus accepts (id, data) natively now, wait, no it doesn't. We need to update lead.api.js next.
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['leads'] });
     },
@@ -31,13 +38,18 @@ export const LeadList = () => {
   if (isError) return <div className="text-red-500 p-4 text-center mt-8">Error loading leads.</div>;
 
   const leads = leadsResponse?.data || [];
+  const users = usersResponse?.data || [];
   
   const statuses = ['NEW', 'CONTACTED', 'QUALIFIED', 'PROPOSAL', 'WON', 'LOST'];
 
   const handleStatusChange = (id, newStatus) => {
-    updateStatusMutation.mutate({ id, status: newStatus });
+    updateLeadMutation.mutate({ id, data: { status: newStatus } });
   };
   
+  const handleAssigneeChange = (id, newAssigneeId) => {
+    updateLeadMutation.mutate({ id, data: { assignedToId: newAssigneeId || null } });
+  };
+
   const handleDelete = (id) => {
     if (window.confirm('Are you sure you want to delete this lead?')) {
       deleteLeadMutation.mutate(id);
@@ -53,6 +65,7 @@ export const LeadList = () => {
               <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Lead</th>
               <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Company/Phone</th>
               <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Assignee</th>
               <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Created</th>
               <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
             </tr>
@@ -60,7 +73,7 @@ export const LeadList = () => {
           <tbody className="bg-white divide-y divide-gray-200">
             {leads.length === 0 ? (
               <tr>
-                <td colSpan="5" className="px-6 py-8 text-center text-gray-500">
+                <td colSpan="6" className="px-6 py-8 text-center text-gray-500">
                   No leads found. Waiting for submissions!
                 </td>
               </tr>
@@ -78,6 +91,25 @@ export const LeadList = () => {
                   <td className="px-6 py-4 whitespace-nowrap">
                     <LeadStatusBadge status={lead.status} />
                   </td>
+                  <td className="px-6 py-4 whitespace-nowrap">
+                    {user?.role === 'ADMIN' ? (
+                      <select
+                        value={lead.assignedToId || ''}
+                        onChange={(e) => handleAssigneeChange(lead.id, e.target.value)}
+                        disabled={updateLeadMutation.isPending}
+                        className="block w-full max-w-xs rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm border p-1.5 bg-white text-gray-700"
+                      >
+                        <option value="">Unassigned</option>
+                        {users.map(u => (
+                          <option key={u.id} value={u.id}>{u.name}</option>
+                        ))}
+                      </select>
+                    ) : (
+                      <span className="text-sm text-gray-700">
+                        {lead.assignedTo?.name || <span className="text-gray-400 italic">Unassigned</span>}
+                      </span>
+                    )}
+                  </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                     {new Date(lead.createdAt).toLocaleDateString()}
                   </td>
@@ -86,7 +118,7 @@ export const LeadList = () => {
                       <select
                         value={lead.status}
                         onChange={(e) => handleStatusChange(lead.id, e.target.value)}
-                        disabled={updateStatusMutation.isPending}
+                        disabled={updateLeadMutation.isPending}
                         className="block w-32 rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm border p-1.5 bg-white text-gray-700"
                       >
                         {statuses.map(s => <option key={s} value={s}>{s}</option>)}

@@ -1,6 +1,4 @@
-import pkg from '@prisma/client';
-const { PrismaClient } = pkg;
-const prisma = new PrismaClient();
+import prisma from '../../lib/prisma.js';
 
 export const createLead = async (data) => {
   return await prisma.lead.create({ data });
@@ -10,6 +8,14 @@ export const getLeads = async (filters = {}) => {
   return await prisma.lead.findMany({
     where: filters,
     orderBy: { createdAt: 'desc' },
+    include: {
+      assignedTo: {
+        select: {
+          id: true,
+          name: true,
+        },
+      },
+    },
   });
 };
 

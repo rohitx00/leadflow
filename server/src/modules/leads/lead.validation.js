@@ -13,6 +13,7 @@ export const createPublicLeadSchema = z.object({
 export const updateLeadSchema = z.object({
   body: z.object({
     status: z.enum(['NEW', 'CONTACTED', 'QUALIFIED', 'PROPOSAL', 'WON', 'LOST']).optional(),
+    assignedToId: z.string().uuid().optional().nullable(),
     firstName: z.string().min(1).optional(),
     lastName: z.string().min(1).optional(),
     email: z.string().email().optional(),

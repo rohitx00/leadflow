@@ -14,8 +14,8 @@ export const getLeadById = async (id) => {
   return response.data;
 };
 
-export const updateLeadStatus = async (id, status) => {
-  const response = await api.patch(`/leads/${id}`, { status });
+export const updateLeadStatus = async (id, data) => {
+  const response = await api.patch(`/leads/${id}`, data);
   return response.data;
 };
 
