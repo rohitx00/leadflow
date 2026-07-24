@@ -21,3 +21,9 @@ export const updateLeadSchema = z.object({
     phone: z.string().optional(),
   }),
 });
+
+export const addNoteSchema = z.object({
+  body: z.object({
+    content: z.string().min(1, 'Note content is required'),
+  }),
+});

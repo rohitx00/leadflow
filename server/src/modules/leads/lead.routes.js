@@ -1,7 +1,7 @@
 import { Router } from 'express';
 import * as leadController from './lead.controller.js';
 import { validate } from '../../middleware/validate.js';
-import { createPublicLeadSchema, updateLeadSchema } from './lead.validation.js';
+import { createPublicLeadSchema, updateLeadSchema, addNoteSchema } from './lead.validation.js';
 import rateLimit from 'express-rate-limit';
 import { authenticate } from '../../middleware/authenticate.js';
 import { authorize } from '../../middleware/authorize.js';
@@ -33,8 +33,9 @@ router.use(authenticate);
 router.get('/', leadController.getLeads);
 router.get('/:id', leadController.getLeadById);
 router.patch('/:id', validate(updateLeadSchema), leadController.updateLead);
+router.post('/:id/notes', validate(addNoteSchema), leadController.addNote);
 
 // Only ADMIN can delete leads
-router.delete('/:id', authorize(['ADMIN']), leadController.deleteLead);
+router.delete('/:id', authorize('ADMIN'), leadController.deleteLead);
 
 export default router;

@@ -22,6 +22,18 @@ export const getLeads = async (filters = {}) => {
 export const getLeadById = async (id) => {
   return await prisma.lead.findUnique({
     where: { id },
+    include: {
+      assignedTo: {
+        select: { id: true, name: true }
+      },
+      notes: {
+        include: { author: { select: { name: true } } },
+        orderBy: { createdAt: 'desc' }
+      },
+      activities: {
+        orderBy: { createdAt: 'desc' }
+      }
+    }
   });
 };
 
@@ -29,6 +41,18 @@ export const updateLead = async (id, data) => {
   return await prisma.lead.update({
     where: { id },
     data,
+  });
+};
+
+export const createActivity = async (leadId, action, description) => {
+  return await prisma.activity.create({
+    data: { leadId, action, description }
+  });
+};
+
+export const addNoteToLead = async (leadId, authorId, content) => {
+  return await prisma.leadNote.create({
+    data: { leadId, authorId, content }
   });
 };
 

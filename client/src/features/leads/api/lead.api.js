@@ -4,22 +4,22 @@ export const submitPublicLead = (data) => {
   return api.post('/leads/public', data);
 };
 
-export const getLeads = async () => {
-  const response = await api.get('/leads');
-  return response.data;
+export const getLeads = () => {
+  return api.get('/leads');
 };
 
-export const getLeadById = async (id) => {
-  const response = await api.get(`/leads/${id}`);
-  return response.data;
+export const getLeadById = (id) => {
+  return api.get(`/leads/${id}`);
 };
 
-export const updateLeadStatus = async (id, data) => {
-  const response = await api.patch(`/leads/${id}`, data);
-  return response.data;
+export const updateLeadStatus = (id, data) => {
+  return api.patch(`/leads/${id}`, data);
 };
 
-export const deleteLead = async (id) => {
-  const response = await api.delete(`/leads/${id}`);
-  return response.data;
+export const deleteLead = (id) => {
+  return api.delete(`/leads/${id}`);
+};
+
+export const addLeadNote = (id, content) => {
+  return api.post(`/leads/${id}/notes`, { content });
 };

@@ -19,9 +19,29 @@ export const getLeadById = async (id) => {
 };
 
 export const updateLead = async (id, data) => {
-  // Verify existence first
+  const existingLead = await getLeadById(id);
+  const updated = await leadRepository.updateLead(id, data);
+  
+  if (data.status && data.status !== existingLead.status) {
+    await leadRepository.createActivity(id, 'STATUS_CHANGED', `Lead status changed from ${existingLead.status} to ${data.status}`);
+  }
+  if (data.assignedToId !== undefined && data.assignedToId !== existingLead.assignedToId) {
+    // We could fetch user name, but let's keep it simple
+    if (data.assignedToId === null) {
+      await leadRepository.createActivity(id, 'LEAD_UNASSIGNED', 'Lead was unassigned');
+    } else {
+      await leadRepository.createActivity(id, 'LEAD_ASSIGNED', 'Lead was assigned to a new representative');
+    }
+  }
+
+  return updated;
+};
+
+export const addNote = async (id, userId, content) => {
   await getLeadById(id);
-  return await leadRepository.updateLead(id, data);
+  const note = await leadRepository.addNoteToLead(id, userId, content);
+  await leadRepository.createActivity(id, 'NOTE_ADDED', 'A new note was added to this lead');
+  return note;
 };
 
 export const deleteLead = async (id) => {
