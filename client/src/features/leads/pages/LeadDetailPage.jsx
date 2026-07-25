@@ -42,7 +42,7 @@ export const LeadDetailPage = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-100 p-8">
+    <div className="flex-grow bg-gray-100 p-8">
       <div className="max-w-4xl mx-auto space-y-6">
         {/* Back Link */}
         <div>
