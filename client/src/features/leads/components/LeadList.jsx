@@ -1,19 +1,24 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { getLeads, updateLeadStatus, deleteLead } from '../api/lead.api.js';
+import { updateLeadStatus, deleteLead } from '../api/lead.api.js';
 import { getUsers } from '../../users/api/user.api.js';
 import { LeadStatusBadge } from './LeadStatusBadge.jsx';
 import { useAuth } from '../../auth/hooks/useAuth.jsx';
 
-export const LeadList = () => {
+export const LeadList = ({
+  leads,
+  isLoading,
+  isError,
+  search,
+  setSearch,
+  statusFilter,
+  setStatusFilter,
+  assigneeFilter,
+  setAssigneeFilter
+}) => {
   const queryClient = useQueryClient();
   const { user } = useAuth();
-  
-  const { data: leadsResponse, isLoading, isError } = useQuery({
-    queryKey: ['leads'],
-    queryFn: getLeads
-  });
 
   const { data: usersResponse } = useQuery({
     queryKey: ['users'],
@@ -22,7 +27,7 @@ export const LeadList = () => {
   });
 
   const updateLeadMutation = useMutation({
-    mutationFn: ({ id, data }) => updateLeadStatus(id, data), // updateLeadStatus accepts (id, data) natively now, wait, no it doesn't. We need to update lead.api.js next.
+    mutationFn: ({ id, data }) => updateLeadStatus(id, data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['leads'] });
     },
@@ -35,13 +40,8 @@ export const LeadList = () => {
     },
   });
 
-  if (isLoading) return <div className="text-gray-500 p-4 text-center mt-8">Loading leads...</div>;
-  if (isError) return <div className="text-red-500 p-4 text-center mt-8">Error loading leads.</div>;
-
-  const leads = leadsResponse?.data || [];
   const users = usersResponse?.data || [];
-  
-  const statuses = ['NEW', 'CONTACTED', 'QUALIFIED', 'PROPOSAL', 'WON', 'LOST'];
+  const statuses = ['NEW', 'CONTACTED', 'QUALIFIED', 'CONVERTED', 'LOST'];
 
   const handleStatusChange = (id, newStatus) => {
     updateLeadMutation.mutate({ id, data: { status: newStatus } });
@@ -59,8 +59,49 @@ export const LeadList = () => {
 
   return (
     <div className="bg-white shadow rounded-lg overflow-hidden border border-gray-200">
-      <div className="overflow-x-auto">
-        <table className="min-w-full divide-y divide-gray-200">
+      <div className="p-4 border-b border-gray-200 bg-gray-50 flex flex-col md:flex-row gap-4 items-center justify-between">
+        <div className="flex-1 w-full relative">
+          <input
+            type="text"
+            placeholder="Search leads..."
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            className="w-full pl-10 pr-4 py-2 rounded-md border border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm"
+          />
+          <svg className="absolute left-3 top-2.5 h-4 w-4 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+          </svg>
+        </div>
+        <div className="flex gap-4 w-full md:w-auto">
+          <select
+            value={statusFilter}
+            onChange={(e) => setStatusFilter(e.target.value)}
+            className="w-full md:w-40 rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm border p-2 bg-white text-gray-700"
+          >
+            <option value="">All Statuses</option>
+            {statuses.map(s => <option key={s} value={s}>{s}</option>)}
+          </select>
+          {user?.role === 'ADMIN' && (
+            <select
+              value={assigneeFilter}
+              onChange={(e) => setAssigneeFilter(e.target.value)}
+              className="w-full md:w-40 rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm border p-2 bg-white text-gray-700"
+            >
+              <option value="">All Assignees</option>
+              <option value="unassigned">Unassigned</option>
+              {users.map(u => <option key={u.id} value={u.id}>{u.name}</option>)}
+            </select>
+          )}
+        </div>
+      </div>
+      
+      {isLoading ? (
+        <div className="p-8 text-center text-gray-500">Loading leads...</div>
+      ) : isError ? (
+        <div className="p-8 text-center text-red-500">Error loading leads.</div>
+      ) : (
+        <div className="overflow-x-auto">
+          <table className="min-w-full divide-y divide-gray-200">
           <thead className="bg-gray-50">
             <tr>
               <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Lead</th>
@@ -83,7 +124,7 @@ export const LeadList = () => {
                 <tr key={lead.id} className="hover:bg-gray-50 transition-colors">
                   <td className="px-6 py-4 whitespace-nowrap">
                     <Link to={`/dashboard/leads/${lead.id}`} className="font-medium text-blue-600 hover:text-blue-800 hover:underline">
-                      {lead.firstName} {lead.lastName}
+                      {lead.firstName} {lead.lastName || ''}
                     </Link>
                     <div className="text-sm text-gray-500">{lead.email}</div>
                   </td>
@@ -143,6 +184,7 @@ export const LeadList = () => {
           </tbody>
         </table>
       </div>
+      )}
     </div>
   );
 };

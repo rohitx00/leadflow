@@ -4,8 +4,8 @@ export const createPublicLead = async (leadData) => {
   return await leadRepository.createLead(leadData);
 };
 
-export const getLeads = async () => {
-  return await leadRepository.getLeads();
+export const getLeads = async (query = {}) => {
+  return await leadRepository.getLeads(query);
 };
 
 export const getLeadById = async (id) => {

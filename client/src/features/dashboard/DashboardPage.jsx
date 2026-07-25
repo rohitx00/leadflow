@@ -1,11 +1,38 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useAuth } from '../auth/hooks/useAuth.jsx';
 import { useNavigate } from 'react-router-dom';
+import { useQuery } from '@tanstack/react-query';
+import { getLeads } from '../leads/api/lead.api.js';
 import { LeadList } from '../leads/components/LeadList.jsx';
+import { AnalyticsCards } from './components/AnalyticsCards.jsx';
 
 const DashboardPage = () => {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
+
+  const [search, setSearch] = useState('');
+  const [statusFilter, setStatusFilter] = useState('');
+  const [assigneeFilter, setAssigneeFilter] = useState('');
+
+  // Use a debounced search value for the API query
+  const [debouncedSearch, setDebouncedSearch] = React.useState('');
+  React.useEffect(() => {
+    const timer = setTimeout(() => setDebouncedSearch(search), 300);
+    return () => clearTimeout(timer);
+  }, [search]);
+
+  const filters = {
+    ...(debouncedSearch && { search: debouncedSearch }),
+    ...(statusFilter && { status: statusFilter }),
+    ...(assigneeFilter && { assignedToId: assigneeFilter }),
+  };
+
+  const { data: leadsResponse, isLoading, isError } = useQuery({
+    queryKey: ['leads', filters],
+    queryFn: () => getLeads(filters)
+  });
+
+  const leads = leadsResponse?.data || [];
 
   const handleLogout = () => {
     logout();
@@ -30,8 +57,20 @@ const DashboardPage = () => {
           </div>
         </div>
         
+        <AnalyticsCards leads={leads} />
+
         <div className="mb-8">
-          <LeadList />
+          <LeadList 
+            leads={leads} 
+            isLoading={isLoading} 
+            isError={isError}
+            search={search}
+            setSearch={setSearch}
+            statusFilter={statusFilter}
+            setStatusFilter={setStatusFilter}
+            assigneeFilter={assigneeFilter}
+            setAssigneeFilter={setAssigneeFilter}
+          />
         </div>
       </div>
     </div>
