@@ -21,8 +21,13 @@ export const getLeads = async (req, res, next) => {
       filters.assignedToId = req.user.id;
     }
 
-    const leads = await leadService.getLeads(filters);
-    res.status(200).json({ success: true, data: leads });
+    const result = await leadService.getLeads(filters);
+    res.status(200).json({ 
+      success: true, 
+      data: result.data,
+      pagination: result.pagination,
+      analytics: result.analytics
+    });
   } catch (error) {
     next(error);
   }

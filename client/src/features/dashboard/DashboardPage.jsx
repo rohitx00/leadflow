@@ -6,6 +6,8 @@ import { getLeads } from '../leads/api/lead.api.js';
 import { LeadList } from '../leads/components/LeadList.jsx';
 import { LeadBoard } from '../leads/components/LeadBoard.jsx';
 import { AnalyticsCards } from './components/AnalyticsCards.jsx';
+import { DashboardTasks } from '../tasks/components/DashboardTasks.jsx';
+import { UserReportTable } from '../users/components/UserReportTable.jsx';
 
 const DashboardPage = () => {
   const { user, logout } = useAuth();
@@ -15,6 +17,7 @@ const DashboardPage = () => {
   const [statusFilter, setStatusFilter] = useState('');
   const [assigneeFilter, setAssigneeFilter] = useState('');
   const [viewMode, setViewMode] = useState('LIST');
+  const [page, setPage] = useState(1);
 
   // Use a debounced search value for the API query
   const [debouncedSearch, setDebouncedSearch] = React.useState('');
@@ -23,10 +26,17 @@ const DashboardPage = () => {
     return () => clearTimeout(timer);
   }, [search]);
 
+  // Reset page to 1 when filters change
+  React.useEffect(() => {
+    setPage(1);
+  }, [debouncedSearch, statusFilter, assigneeFilter]);
+
   const filters = {
     ...(debouncedSearch && { search: debouncedSearch }),
     ...(statusFilter && { status: statusFilter }),
     ...(assigneeFilter && { assignedToId: assigneeFilter }),
+    page,
+    limit: 10,
   };
 
   const { data: leadsResponse, isLoading, isError } = useQuery({
@@ -35,6 +45,8 @@ const DashboardPage = () => {
   });
 
   const leads = leadsResponse?.data || [];
+  const pagination = leadsResponse?.pagination || { page: 1, totalPages: 1, total: 0 };
+  const analytics = leadsResponse?.analytics;
 
   const handleLogout = () => {
     logout();
@@ -68,6 +80,14 @@ const DashboardPage = () => {
                 Board
               </button>
             </div>
+            {user?.role === 'ADMIN' && (
+              <button 
+                onClick={() => navigate('/dashboard/users')}
+                className="bg-purple-100 border border-purple-200 hover:bg-purple-200 text-purple-700 font-medium py-2 px-4 rounded shadow-sm transition"
+              >
+                Manage Users
+              </button>
+            )}
             <button 
               onClick={handleLogout}
               className="bg-white border border-gray-300 hover:bg-gray-50 text-gray-700 font-medium py-2 px-4 rounded shadow-sm transition"
@@ -77,7 +97,11 @@ const DashboardPage = () => {
           </div>
         </div>
         
-        <AnalyticsCards leads={leads} />
+        <AnalyticsCards analytics={analytics} />
+        
+        {user?.role === 'ADMIN' && <UserReportTable />}
+        
+        <DashboardTasks />
 
         <div className="mb-8">
           {viewMode === 'LIST' ? (
@@ -98,6 +122,30 @@ const DashboardPage = () => {
               isLoading={isLoading}
               isError={isError}
             />
+          )}
+
+          {pagination.totalPages > 1 && (
+            <div className="flex justify-between items-center mt-6 bg-white p-4 rounded-lg shadow-sm border border-gray-200">
+              <span className="text-sm text-gray-600">
+                Showing page <span className="font-semibold text-gray-900">{pagination.page}</span> of <span className="font-semibold text-gray-900">{pagination.totalPages}</span> ({pagination.total} total)
+              </span>
+              <div className="flex space-x-2">
+                <button
+                  onClick={() => setPage((p) => Math.max(1, p - 1))}
+                  disabled={pagination.page <= 1}
+                  className="px-4 py-2 border border-gray-300 rounded-md text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 disabled:bg-gray-100 disabled:text-gray-400 disabled:cursor-not-allowed transition"
+                >
+                  Previous
+                </button>
+                <button
+                  onClick={() => setPage((p) => Math.min(pagination.totalPages, p + 1))}
+                  disabled={pagination.page >= pagination.totalPages}
+                  className="px-4 py-2 border border-gray-300 rounded-md text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 disabled:bg-gray-100 disabled:text-gray-400 disabled:cursor-not-allowed transition"
+                >
+                  Next
+                </button>
+              </div>
+            </div>
           )}
         </div>
       </div>

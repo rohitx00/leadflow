@@ -89,7 +89,11 @@ export const LeadList = ({
             >
               <option value="">All Assignees</option>
               <option value="unassigned">Unassigned</option>
-              {users.map(u => <option key={u.id} value={u.id}>{u.name}</option>)}
+              {users.map(u => (
+                <option key={u.id} value={u.id}>
+                  {u.name} {!u.isActive ? '(Deactivated)' : ''}
+                </option>
+              ))}
             </select>
           )}
         </div>
@@ -141,11 +145,17 @@ export const LeadList = ({
                         value={lead.assignedToId || ''}
                         onChange={(e) => handleAssigneeChange(lead.id, e.target.value)}
                         disabled={updateLeadMutation.isPending}
-                        className="block w-full max-w-xs rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm border p-1.5 bg-white text-gray-700"
+                        className={`block w-full max-w-xs rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm border p-1.5 transition-colors duration-200 ${
+                          updateLeadMutation.isPending && updateLeadMutation.variables?.id === lead.id && 'assignedToId' in updateLeadMutation.variables?.data
+                            ? 'bg-blue-100 text-blue-800 animate-pulse border-blue-300'
+                            : 'bg-white text-gray-700'
+                        }`}
                       >
                         <option value="">Unassigned</option>
                         {users.map(u => (
-                          <option key={u.id} value={u.id}>{u.name}</option>
+                          <option key={u.id} value={u.id} disabled={!u.isActive && lead.assignedToId !== u.id}>
+                            {u.name} {!u.isActive ? '(Deactivated)' : ''}
+                          </option>
                         ))}
                       </select>
                     ) : (
@@ -163,7 +173,11 @@ export const LeadList = ({
                         value={lead.status}
                         onChange={(e) => handleStatusChange(lead.id, e.target.value)}
                         disabled={updateLeadMutation.isPending}
-                        className="block w-32 rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm border p-1.5 bg-white text-gray-700"
+                        className={`block w-32 rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm border p-1.5 transition-colors duration-200 ${
+                          updateLeadMutation.isPending && updateLeadMutation.variables?.id === lead.id && 'status' in updateLeadMutation.variables?.data
+                            ? 'bg-blue-100 text-blue-800 animate-pulse border-blue-300' 
+                            : 'bg-white text-gray-700'
+                        }`}
                       >
                         {statuses.map(s => <option key={s} value={s}>{s}</option>)}
                       </select>

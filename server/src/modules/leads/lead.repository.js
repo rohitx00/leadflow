@@ -5,7 +5,7 @@ export const createLead = async (data) => {
 };
 
 export const getLeads = async (filters = {}) => {
-  const { search, status, assignedToId } = filters;
+  const { search, status, assignedToId, page = 1, limit = 10 } = filters;
   
   const where = {};
   
@@ -30,18 +30,55 @@ export const getLeads = async (filters = {}) => {
     ];
   }
 
-  return await prisma.lead.findMany({
-    where,
-    orderBy: { createdAt: 'desc' },
-    include: {
-      assignedTo: {
-        select: {
-          id: true,
-          name: true,
+  const skip = (Number(page) - 1) * Number(limit);
+  const take = Number(limit);
+
+  const [data, total, statusCounts] = await prisma.$transaction([
+    prisma.lead.findMany({
+      where,
+      skip,
+      take,
+      orderBy: { createdAt: 'desc' },
+      include: {
+        assignedTo: {
+          select: {
+            id: true,
+            name: true,
+          },
         },
       },
-    },
+    }),
+    prisma.lead.count({ where }),
+    prisma.lead.groupBy({
+      by: ['status'],
+      where,
+      _count: { status: true }
+    })
+  ]);
+
+  const analytics = {
+    total,
+    newLeads: 0,
+    wonLeads: 0,
+    lostLeads: 0
+  };
+
+  statusCounts.forEach(item => {
+    if (item.status === 'NEW') analytics.newLeads = item._count.status;
+    if (item.status === 'CONVERTED') analytics.wonLeads = item._count.status;
+    if (item.status === 'LOST') analytics.lostLeads = item._count.status;
   });
+
+  return {
+    data,
+    analytics,
+    pagination: {
+      total,
+      page: Number(page),
+      limit: Number(limit),
+      totalPages: Math.ceil(total / Number(limit))
+    }
+  };
 };
 
 export const getLeadById = async (id) => {

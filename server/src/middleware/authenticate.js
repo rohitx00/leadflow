@@ -19,7 +19,7 @@ export const authenticate = async (req, res, next) => {
     // Find user by ID
     const user = await prisma.user.findUnique({
       where: { id: decoded.id },
-      select: { id: true, email: true, name: true, role: true }
+      select: { id: true, email: true, name: true, role: true, isActive: true }
     });
 
     if (!user) {
@@ -27,12 +27,24 @@ export const authenticate = async (req, res, next) => {
       error.statusCode = 401;
       return next(error);
     }
+    
+    if (user.isActive === false) {
+      const error = new Error('Your account has been deactivated');
+      error.statusCode = 403;
+      return next(error);
+    }
 
     req.user = user;
     next();
   } catch (err) {
-    const error = new Error('Not authorized to access this route');
-    error.statusCode = 401;
-    return next(error);
+    console.error('Authentication error:', err.message);
+    if (err.name === 'JsonWebTokenError' || err.name === 'TokenExpiredError') {
+      const error = new Error('Not authorized to access this route');
+      error.statusCode = 401;
+      return next(error);
+    }
+    // For database or other internal errors, pass the actual error to global error handler
+    err.statusCode = 500;
+    return next(err);
   }
 };

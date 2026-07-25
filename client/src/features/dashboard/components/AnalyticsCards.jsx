@@ -1,11 +1,9 @@
 import React from 'react';
 
-export const AnalyticsCards = ({ leads = [] }) => {
-  const total = leads.length;
-  const newLeads = leads.filter(l => l.status === 'NEW').length;
-  const wonLeads = leads.filter(l => l.status === 'CONVERTED').length;
-  const lostLeads = leads.filter(l => l.status === 'LOST').length;
+export const AnalyticsCards = ({ analytics }) => {
+  if (!analytics) return null;
 
+  const { total, newLeads, wonLeads, lostLeads } = analytics;
   const closedLeads = wonLeads + lostLeads;
   const conversionRate = closedLeads === 0 ? 0 : Math.round((wonLeads / closedLeads) * 100);
 

@@ -11,6 +11,12 @@ export const loginUser = async (email, password) => {
     throw error;
   }
 
+  if (user.isActive === false) {
+    const error = new Error('Your account has been deactivated. Please contact an administrator.');
+    error.statusCode = 403;
+    throw error;
+  }
+
   const isMatch = await bcrypt.compare(password, user.password);
 
   if (!isMatch) {

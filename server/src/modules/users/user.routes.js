@@ -3,7 +3,7 @@ import * as userController from './user.controller.js';
 import { validate } from '../../middleware/validate.js';
 import { authenticate } from '../../middleware/authenticate.js';
 import { authorize } from '../../middleware/authorize.js';
-import { createUserSchema } from './user.validation.js';
+import { createUserSchema, updateRoleSchema, updateStatusSchema } from './user.validation.js';
 
 const router = Router();
 
@@ -11,6 +11,10 @@ const router = Router();
 router.use(authenticate, authorize('ADMIN'));
 
 router.post('/', validate(createUserSchema), userController.createUser);
+router.get('/report', userController.getUserReport);
 router.get('/', userController.getUsers);
+router.patch('/:id/role', validate(updateRoleSchema), userController.updateUserRole);
+router.patch('/:id/status', validate(updateStatusSchema), userController.updateUserStatus);
+router.delete('/:id', userController.deleteUser);
 
 export default router;

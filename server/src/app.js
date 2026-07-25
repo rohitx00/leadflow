@@ -6,6 +6,7 @@ import { notFound } from './middleware/notFound.js';
 import { authRoutes } from './modules/auth/index.js';
 import { userRoutes } from './modules/users/index.js';
 import { leadRoutes } from './modules/leads/index.js';
+import { taskRoutes } from './modules/tasks/index.js';
 
 const app = express();
 
@@ -16,6 +17,7 @@ app.use(express.json());
 app.use('/api/v1/auth', authRoutes);
 app.use('/api/v1/users', userRoutes);
 app.use('/api/v1/leads', leadRoutes);
+app.use('/api/v1/tasks', taskRoutes);
 
 // Basic health check route
 app.get('/api/v1/health', (req, res) => {
