@@ -64,9 +64,10 @@ const PublicLeadForm = () => {
           Member Login
         </Link>
       </div>
-      
+
+
       <div className="bg-white p-8 rounded-xl shadow-lg max-w-lg w-full border-t-4 border-blue-600">
-        <h1 className="text-3xl font-bold text-gray-900 mb-2">Contact Sales</h1>
+        <h2 className="text-3xl font-bold text-gray-900 mb-2">Lead Capture Form</h2>
         <p className="text-gray-600 mb-6">
           Fill out the form below and we'll be in touch.
         </p>
