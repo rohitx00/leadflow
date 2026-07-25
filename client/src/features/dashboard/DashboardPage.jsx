@@ -69,6 +69,14 @@ const DashboardPage = () => {
                 Board
               </button>
             </div>
+            {user?.role === 'ADMIN' && (
+              <button 
+                onClick={() => navigate('/dashboard/users')}
+                className="bg-purple-100 border border-purple-200 hover:bg-purple-200 text-purple-700 font-medium py-2 px-4 rounded shadow-sm transition"
+              >
+                Manage Users
+              </button>
+            )}
             <button 
               onClick={handleLogout}
               className="bg-white border border-gray-300 hover:bg-gray-50 text-gray-700 font-medium py-2 px-4 rounded shadow-sm transition"
