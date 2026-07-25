@@ -1,7 +1,7 @@
 import { Router } from 'express';
 import * as leadController from './lead.controller.js';
 import { validate } from '../../middleware/validate.js';
-import { createPublicLeadSchema, updateLeadSchema, addNoteSchema } from './lead.validation.js';
+import { createPublicLeadSchema, updateLeadSchema, addNoteSchema, getLeadsSchema } from './lead.validation.js';
 import rateLimit from 'express-rate-limit';
 import { authenticate } from '../../middleware/authenticate.js';
 import { authorize } from '../../middleware/authorize.js';
@@ -30,7 +30,7 @@ router.post(
 // Protected Endpoints
 router.use(authenticate);
 
-router.get('/', leadController.getLeads);
+router.get('/', validate(getLeadsSchema), leadController.getLeads);
 router.get('/:id', leadController.getLeadById);
 router.patch('/:id', validate(updateLeadSchema), leadController.updateLead);
 router.post('/:id/notes', validate(addNoteSchema), leadController.addNote);

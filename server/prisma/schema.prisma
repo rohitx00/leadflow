@@ -20,35 +20,61 @@ enum LeadStatus {
   CONVERTED
 }
 
+enum LeadSource {
+  WEBSITE
+  REFERRAL
+  MANUAL
+  OTHER
+}
+
 model User {
-  id        String     @id @default(uuid())
-  email     String     @unique
-  password  String
-  name      String
-  role      Role       @default(MEMBER)
-  leads     Lead[]     // Assigned leads
-  notes     LeadNote[]
-  createdAt DateTime   @default(now())
-  updatedAt DateTime   @updatedAt
+  id           String     @id @default(uuid())
+  email        String     @unique
+  password     String
+  name         String
+  role         Role       @default(MEMBER)
+  
+  assignedLeads Lead[]    @relation("AssignedLeads")
+  createdLeads  Lead[]    @relation("CreatedLeads")
+  notes         LeadNote[]
+  
+  createdAt    DateTime   @default(now())
+  updatedAt    DateTime   @updatedAt
 }
 
 model Lead {
-  id          String     @id @default(uuid())
-  firstName   String
-  lastName    String
-  email       String
-  company     String?
-  phone       String?
-  status      LeadStatus @default(NEW)
-  
-  assignedToId String?
-  assignedTo   User?      @relation(fields: [assignedToId], references: [id])
-  
-  notes       LeadNote[]
-  activities  Activity[]
-  
-  createdAt   DateTime   @default(now())
-  updatedAt   DateTime   @updatedAt
+  id            String      @id @default(cuid())
+
+  // Basic Information
+  firstName     String
+  lastName      String?
+  email         String
+  phone         String
+  company       String?
+  message       String?
+
+  // Business
+  status        LeadStatus  @default(NEW)
+  source        LeadSource  @default(WEBSITE)
+
+  // Assignment
+  assignedToId  String?
+  assignedTo    User?       @relation("AssignedLeads", fields: [assignedToId], references: [id])
+
+  // Creator
+  createdById   String?
+  createdBy     User?       @relation("CreatedLeads", fields: [createdById], references: [id])
+
+  // Future Integrations
+  externalReference String?
+
+  // Relations
+  notes         LeadNote[]
+  activities    Activity[]
+
+  // Audit
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @updatedAt
 }
 
 model LeadNote {

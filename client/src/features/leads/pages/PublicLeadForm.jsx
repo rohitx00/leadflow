@@ -7,10 +7,11 @@ import { Link } from 'react-router-dom';
 
 const leadSchema = z.object({
   firstName: z.string().min(1, 'First name is required'),
-  lastName: z.string().min(1, 'Last name is required'),
+  lastName: z.string().optional(),
   email: z.string().email('Invalid email address'),
   company: z.string().optional(),
-  phone: z.string().optional(),
+  phone: z.string().min(1, 'Phone number is required'),
+  message: z.string().optional(),
 });
 
 const PublicLeadForm = () => {
@@ -88,7 +89,7 @@ const PublicLeadForm = () => {
               {errors.firstName && <p className="text-red-500 text-xs mt-1">{errors.firstName.message}</p>}
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Last Name *</label>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Last Name</label>
               <input
                 type="text"
                 {...register('lastName')}
@@ -118,11 +119,21 @@ const PublicLeadForm = () => {
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Phone Number</label>
+            <label className="block text-sm font-medium text-gray-700 mb-1">Phone Number *</label>
             <input
               type="tel"
               {...register('phone')}
+              className={`w-full rounded-md shadow-sm border p-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition ${errors.phone ? 'border-red-500' : 'border-gray-300'}`}
+            />
+            {errors.phone && <p className="text-red-500 text-xs mt-1">{errors.phone.message}</p>}
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">Message</label>
+            <textarea
+              {...register('message')}
               className="w-full rounded-md shadow-sm border p-2 border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition"
+              rows={4}
             />
           </div>
 

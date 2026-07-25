@@ -5,8 +5,33 @@ export const createLead = async (data) => {
 };
 
 export const getLeads = async (filters = {}) => {
+  const { search, status, assignedToId } = filters;
+  
+  const where = {};
+  
+  if (status) {
+    where.status = status;
+  }
+  
+  if (assignedToId) {
+    if (assignedToId === 'unassigned') {
+      where.assignedToId = null;
+    } else {
+      where.assignedToId = assignedToId;
+    }
+  }
+  
+  if (search) {
+    where.OR = [
+      { firstName: { contains: search, mode: 'insensitive' } },
+      { lastName: { contains: search, mode: 'insensitive' } },
+      { email: { contains: search, mode: 'insensitive' } },
+      { company: { contains: search, mode: 'insensitive' } },
+    ];
+  }
+
   return await prisma.lead.findMany({
-    where: filters,
+    where,
     orderBy: { createdAt: 'desc' },
     include: {
       assignedTo: {

@@ -4,8 +4,8 @@ export const submitPublicLead = (data) => {
   return api.post('/leads/public', data);
 };
 
-export const getLeads = () => {
-  return api.get('/leads');
+export const getLeads = (params = {}) => {
+  return api.get('/leads', { params });
 };
 
 export const getLeadById = (id) => {

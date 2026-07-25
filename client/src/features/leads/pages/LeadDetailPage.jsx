@@ -22,10 +22,11 @@ export const LeadDetailPage = () => {
     },
   });
 
-  if (isLoading) return <div className="text-center p-8 text-gray-500">Loading lead details...</div>;
+  if (isLoading || !leadResponse) return <div className="text-center p-8 text-gray-500">Loading lead details...</div>;
   if (isError) return <div className="text-center p-8 text-red-500">Failed to load lead details.</div>;
 
-  const lead = leadResponse.data;
+  const lead = leadResponse?.data;
+  if (!lead) return <div className="text-center p-8 text-red-500">Lead not found.</div>;
 
   // Combine notes and activities into a single timeline, sorted by date descending
   const timelineEvents = [
@@ -53,14 +54,17 @@ export const LeadDetailPage = () => {
         <div className="bg-white rounded-lg shadow p-6 border border-gray-200">
           <div className="flex justify-between items-start">
             <div>
-              <h1 className="text-2xl font-bold text-gray-900">{lead.firstName} {lead.lastName}</h1>
+              <h1 className="text-2xl font-bold text-gray-900">{lead.firstName} {lead.lastName || ''}</h1>
               <p className="text-gray-500 mt-1">{lead.email} {lead.phone && `• ${lead.phone}`}</p>
             </div>
             <LeadStatusBadge status={lead.status} />
           </div>
-          <div className="mt-4 grid grid-cols-2 gap-4 text-sm">
+          <div className="mt-4 grid grid-cols-2 md:grid-cols-3 gap-4 text-sm">
             <div>
               <span className="text-gray-500 font-medium">Company:</span> {lead.company || '-'}
+            </div>
+            <div>
+              <span className="text-gray-500 font-medium">Source:</span> <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-purple-100 text-purple-800">{lead.source}</span>
             </div>
             <div>
               <span className="text-gray-500 font-medium">Assigned To:</span> {lead.assignedTo?.name || 'Unassigned'}
@@ -68,7 +72,21 @@ export const LeadDetailPage = () => {
             <div>
               <span className="text-gray-500 font-medium">Captured:</span> {new Date(lead.createdAt).toLocaleString()}
             </div>
+            {lead.externalReference && (
+              <div>
+                <span className="text-gray-500 font-medium">Ext Ref:</span> {lead.externalReference}
+              </div>
+            )}
           </div>
+          
+          {lead.message && (
+            <div className="mt-6 border-t border-gray-100 pt-4">
+              <h3 className="text-sm font-medium text-gray-500 mb-2">Message</h3>
+              <p className="text-gray-800 text-sm bg-gray-50 p-3 rounded-md italic">
+                "{lead.message}"
+              </p>
+            </div>
+          )}
         </div>
 
         {/* Note Input */}
