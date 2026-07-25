@@ -3,6 +3,7 @@ import { useParams, Link } from 'react-router-dom';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { getLeadById, addLeadNote } from '../api/lead.api.js';
 import { LeadStatusBadge } from '../components/LeadStatusBadge.jsx';
+import { TaskList } from '../../tasks/components/TaskList.jsx';
 
 export const LeadDetailPage = () => {
   const { id } = useParams();
@@ -88,6 +89,9 @@ export const LeadDetailPage = () => {
             </div>
           )}
         </div>
+
+        {/* Task List Integration */}
+        <TaskList leadId={lead.id} />
 
         {/* Note Input */}
         <div className="bg-white rounded-lg shadow p-6 border border-gray-200">
