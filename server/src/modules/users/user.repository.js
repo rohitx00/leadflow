@@ -14,6 +14,22 @@ export const findAllUsers = async () => {
   });
 };
 
+export const findAllUsersWithLeads = async () => {
+  return await prisma.user.findMany({
+    select: { 
+      id: true, 
+      name: true, 
+      email: true, 
+      role: true, 
+      isActive: true, 
+      createdAt: true,
+      assignedLeads: {
+        select: { status: true }
+      }
+    },
+  });
+};
+
 export const updateUserRole = async (id, role) => {
   try {
     return await prisma.user.update({

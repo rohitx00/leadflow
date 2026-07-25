@@ -37,8 +37,14 @@ export const authenticate = async (req, res, next) => {
     req.user = user;
     next();
   } catch (err) {
-    const error = new Error('Not authorized to access this route');
-    error.statusCode = 401;
-    return next(error);
+    console.error('Authentication error:', err.message);
+    if (err.name === 'JsonWebTokenError' || err.name === 'TokenExpiredError') {
+      const error = new Error('Not authorized to access this route');
+      error.statusCode = 401;
+      return next(error);
+    }
+    // For database or other internal errors, pass the actual error to global error handler
+    err.statusCode = 500;
+    return next(err);
   }
 };

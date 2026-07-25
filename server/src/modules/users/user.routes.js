@@ -11,6 +11,7 @@ const router = Router();
 router.use(authenticate, authorize('ADMIN'));
 
 router.post('/', validate(createUserSchema), userController.createUser);
+router.get('/report', userController.getUserReport);
 router.get('/', userController.getUsers);
 router.patch('/:id/role', validate(updateRoleSchema), userController.updateUserRole);
 router.patch('/:id/status', validate(updateStatusSchema), userController.updateUserStatus);

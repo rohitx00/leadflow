@@ -19,3 +19,7 @@ export const updateUserStatus = (id, isActive) => {
 export const deleteUser = (id) => {
   return api.delete(`/users/${id}`);
 };
+
+export const getUserReport = () => {
+  return api.get('/users/report');
+};
