@@ -18,6 +18,15 @@ export const getUsers = async (req, res, next) => {
   }
 };
 
+export const getUserReport = async (req, res, next) => {
+  try {
+    const report = await userService.getUserReport();
+    res.status(200).json({ success: true, data: report });
+  } catch (error) {
+    next(error);
+  }
+};
+
 export const updateUserRole = async (req, res, next) => {
   try {
     const user = await userService.updateUserRole(req.params.id, req.body.role, req.user.id);
