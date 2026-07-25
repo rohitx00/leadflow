@@ -33,6 +33,7 @@ model User {
   password     String
   name         String
   role         Role       @default(MEMBER)
+  isActive     Boolean    @default(true)
   
   assignedLeads Lead[]    @relation("AssignedLeads")
   createdLeads  Lead[]    @relation("CreatedLeads")
@@ -87,7 +88,7 @@ model LeadNote {
   lead      Lead     @relation(fields: [leadId], references: [id], onDelete: Cascade)
   
   authorId  String
-  author    User     @relation(fields: [authorId], references: [id])
+  author    User     @relation(fields: [authorId], references: [id], onDelete: Cascade)
   
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -114,7 +115,7 @@ model Task {
   lead        Lead     @relation(fields: [leadId], references: [id], onDelete: Cascade)
   
   assignedToId String
-  assignedTo   User     @relation(fields: [assignedToId], references: [id])
+  assignedTo   User     @relation(fields: [assignedToId], references: [id], onDelete: Cascade)
   
   createdAt   DateTime @default(now())
 }

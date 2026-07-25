@@ -19,12 +19,18 @@ export const authenticate = async (req, res, next) => {
     // Find user by ID
     const user = await prisma.user.findUnique({
       where: { id: decoded.id },
-      select: { id: true, email: true, name: true, role: true }
+      select: { id: true, email: true, name: true, role: true, isActive: true }
     });
 
     if (!user) {
       const error = new Error('User no longer exists');
       error.statusCode = 401;
+      return next(error);
+    }
+    
+    if (user.isActive === false) {
+      const error = new Error('Your account has been deactivated');
+      error.statusCode = 403;
       return next(error);
     }
 

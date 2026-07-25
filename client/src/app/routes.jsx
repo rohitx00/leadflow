@@ -4,6 +4,7 @@ import LoginPage from '../features/auth/pages/LoginPage.jsx';
 import DashboardPage from '../features/dashboard/DashboardPage.jsx';
 import PublicLeadForm from '../features/leads/pages/PublicLeadForm.jsx';
 import { LeadDetailPage } from '../features/leads/pages/LeadDetailPage.jsx';
+import { UserManagementPage } from '../features/users/pages/UserManagementPage.jsx';
 import { ProtectedRoute } from '../components/layout/ProtectedRoute.jsx';
 
 export const AppRoutes = () => {
@@ -27,6 +28,15 @@ export const AppRoutes = () => {
           </ProtectedRoute>
         } 
       />
+      <Route 
+        path="/dashboard/users" 
+        element={
+          <ProtectedRoute allowedRoles={['ADMIN']}>
+            <UserManagementPage />
+          </ProtectedRoute>
+        } 
+      />
+      <Route path="/unauthorized" element={<Navigate to="/dashboard" replace />} />
       <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>
   );

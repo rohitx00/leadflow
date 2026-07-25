@@ -8,3 +8,15 @@ export const createUserSchema = z.object({
     role: z.enum(['ADMIN', 'MEMBER']).optional(),
   }),
 });
+
+export const updateRoleSchema = z.object({
+  body: z.object({
+    role: z.enum(['ADMIN', 'MEMBER']),
+  }),
+});
+
+export const updateStatusSchema = z.object({
+  body: z.object({
+    isActive: z.boolean(),
+  }),
+});
