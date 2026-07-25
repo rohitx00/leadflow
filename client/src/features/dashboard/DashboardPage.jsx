@@ -6,6 +6,7 @@ import { getLeads } from '../leads/api/lead.api.js';
 import { LeadList } from '../leads/components/LeadList.jsx';
 import { LeadBoard } from '../leads/components/LeadBoard.jsx';
 import { AnalyticsCards } from './components/AnalyticsCards.jsx';
+import { DashboardTasks } from '../tasks/components/DashboardTasks.jsx';
 
 const DashboardPage = () => {
   const { user, logout } = useAuth();
@@ -78,6 +79,8 @@ const DashboardPage = () => {
         </div>
         
         <AnalyticsCards leads={leads} />
+        
+        <DashboardTasks />
 
         <div className="mb-8">
           {viewMode === 'LIST' ? (
