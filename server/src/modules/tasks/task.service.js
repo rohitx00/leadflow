@@ -27,8 +27,8 @@ export const getMyTasks = async (userId) => {
   return await taskRepository.getTasksByUser(userId);
 };
 
-export const getLeadTasks = async (leadId) => {
-  return await taskRepository.getTasksByLead(leadId);
+export const getLeadTasks = async (leadId, userId) => {
+  return await taskRepository.getTasksByLead(leadId, userId);
 };
 
 export const updateTask = async (id, userId, data) => {

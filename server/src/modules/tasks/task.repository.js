@@ -25,9 +25,9 @@ export const getTasksByUser = async (userId) => {
   });
 };
 
-export const getTasksByLead = async (leadId) => {
+export const getTasksByLead = async (leadId, userId) => {
   return await prisma.task.findMany({
-    where: { leadId },
+    where: { leadId, assignedToId: userId },
     orderBy: { dueDate: 'asc' },
     include: {
       assignedTo: { select: { id: true, name: true } },

@@ -20,7 +20,7 @@ export const getMyTasks = async (req, res, next) => {
 
 export const getLeadTasks = async (req, res, next) => {
   try {
-    const tasks = await taskService.getLeadTasks(req.params.leadId);
+    const tasks = await taskService.getLeadTasks(req.params.leadId, req.user.id);
     res.status(200).json({ success: true, data: tasks });
   } catch (error) {
     next(error);
