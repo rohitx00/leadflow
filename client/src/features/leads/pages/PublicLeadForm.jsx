@@ -35,7 +35,7 @@ const PublicLeadForm = () => {
 
   if (isSuccess) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4">
+      <div className="flex-grow bg-gray-50 flex items-center justify-center p-4">
         <div className="bg-white p-8 rounded-xl shadow-lg max-w-md w-full text-center border-t-4 border-green-500">
           <div className="mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-green-100 mb-4">
             <svg className="h-6 w-6 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -58,15 +58,16 @@ const PublicLeadForm = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 flex flex-col items-center justify-center p-4">
+    <div className="flex-grow bg-gray-50 flex flex-col items-center justify-center p-4">
       <div className="absolute top-4 right-6">
         <Link to="/login" className="text-gray-500 hover:text-gray-800 text-sm font-medium transition">
           Member Login
         </Link>
       </div>
-      
+
+
       <div className="bg-white p-8 rounded-xl shadow-lg max-w-lg w-full border-t-4 border-blue-600">
-        <h1 className="text-3xl font-bold text-gray-900 mb-2">Contact Sales</h1>
+        <h2 className="text-3xl font-bold text-gray-900 mb-2">Lead Capture Form</h2>
         <p className="text-gray-600 mb-6">
           Fill out the form below and we'll be in touch.
         </p>

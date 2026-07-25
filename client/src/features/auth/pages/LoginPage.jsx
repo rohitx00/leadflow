@@ -34,9 +34,9 @@ const LoginPage = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-100 flex items-center justify-center p-4">
+    <div className="flex-grow bg-gray-100 flex items-center justify-center p-4">
       <div className="bg-white p-8 rounded-xl shadow-lg max-w-md w-full">
-        <h1 className="text-2xl font-bold text-center text-blue-600 mb-6">LeadFlow Login</h1>
+        
         
         {error && (
           <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
@@ -73,6 +73,22 @@ const LoginPage = () => {
             {isSubmitting ? 'Logging in...' : 'Sign In'}
           </button>
         </form>
+
+        <div className="mt-8 bg-gray-50 p-4 rounded-md border border-gray-200 text-sm text-gray-600">
+          <h3 className="font-semibold text-gray-800 mb-3">Demo Credentials</h3>
+          <div className="space-y-4">
+            <div>
+              <p className="font-medium text-gray-700">Admin</p>
+              <p className="break-all">Email: admin@leadflow.com</p>
+              <p>Password: password123</p>
+            </div>
+            <div>
+              <p className="font-medium text-gray-700">Member</p>
+              <p className="break-all">Email: member1leadflow@example.com</p>
+              <p>Password: password123</p>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   );

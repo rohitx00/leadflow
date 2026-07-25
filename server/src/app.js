@@ -10,7 +10,11 @@ import { taskRoutes } from './modules/tasks/index.js';
 
 const app = express();
 
-app.use(cors());
+app.use(cors({
+  origin: process.env.FRONTEND_URL || '*',
+  methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE'],
+  credentials: true,
+}));
 app.use(express.json());
 
 // Routes

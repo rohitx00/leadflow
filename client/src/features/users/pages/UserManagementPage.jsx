@@ -5,7 +5,7 @@ import { CreateUserForm } from '../components/CreateUserForm.jsx';
 
 export const UserManagementPage = () => {
   return (
-    <div className="min-h-screen bg-gray-100 p-8">
+    <div className="flex-grow bg-gray-100 p-8">
       <div className="max-w-6xl mx-auto">
         <div className="flex justify-between items-center mb-8">
           <div>
